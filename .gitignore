@@ -1,0 +1,13 @@
+/.gradle/
+/.gradle-home/
+/build/
+/out/
+*.iml
+.idea/
+*.class
+.DS_Store
+
+# JVM / local diagnostics
+hs_err_pid*
+replay_pid*
+*.hprof

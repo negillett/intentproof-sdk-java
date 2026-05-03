@@ -1,0 +1,71 @@
+name: Release
+
+# Pushes a semver tag (e.g. v0.2.0) → Maven Central (Sonatype) + GitHub Release with JARs.
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-*"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve release version from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [[ ! "${TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::Tag must look like vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH-prerelease (got ${TAG})"
+            exit 1
+          fi
+          VERSION="${TAG#v}"
+          UPPER="${VERSION^^}"
+          if [[ "${UPPER}" == *"SNAPSHOT"* ]]; then
+            echo "::error::Release tags must not contain SNAPSHOT (got ${VERSION})"
+            exit 1
+          fi
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "Releasing io.github.intentproof:intentproof-sdk:${VERSION} from tag ${TAG}"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Check
+        run: ./gradlew --no-daemon check -PreleaseVersion="${{ steps.version.outputs.version }}"
+
+      - name: Publish to Maven Central (Sonatype)
+        env:
+          ORG_GRADLE_PROJECT_releaseVersion: ${{ steps.version.outputs.version }}
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_GPG_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.SIGNING_GPG_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_GPG_PASSPHRASE }}
+        run: ./gradlew --no-daemon publishToSonatype closeAndReleaseSonatypeStagingRepository --stacktrace
+
+      - name: Build release artifacts for GitHub
+        run: ./gradlew --no-daemon jar sourcesJar javadocJar -PreleaseVersion="${{ steps.version.outputs.version }}"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${GITHUB_REF_NAME}"
+          gh release create "${TAG}" \
+            --title "intentproof-sdk ${VERSION}" \
+            --notes "Maven Central: \`io.github.intentproof:intentproof-sdk:${VERSION}\`" \
+            "build/libs/intentproof-sdk-${VERSION}.jar" \
+            "build/libs/intentproof-sdk-${VERSION}-sources.jar" \
+            "build/libs/intentproof-sdk-${VERSION}-javadoc.jar"

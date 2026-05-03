@@ -1,0 +1,23 @@
+[versions]
+nexus-publish = "2.0.0"
+errorprone = "2.49.0"
+errorprone-plugin = "5.1.0"
+jackson = "2.21.3"
+junit = "5.14.3"
+junit-platform = "1.14.3"
+mockito = "5.23.0"
+spotless = "8.4.0"
+googleJavaFormat = "1.35.0"
+jacoco = "0.8.14"
+
+[libraries]
+errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform" }
+
+[plugins]
+nexuspublish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish" }
+errorprone = { id = "net.ltgt.errorprone", version.ref = "errorprone-plugin" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
