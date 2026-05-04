@@ -12,7 +12,8 @@ plugins {
   alias(libs.plugins.spotless)
 }
 
-description = "Structured ExecutionEvent emission for verification and ingest."
+description =
+    "IntentProof Java SDK: structured ExecutionEvent emission for verification and ingest."
 
 /**
  * Gradle signing accepts only an 8-hex OpenPGP key id (`00B5050F` or `0x00B5050F`). Secrets often
@@ -207,6 +208,12 @@ publishing {
       }
     }
   }
+}
+
+tasks.register<Exec>("intentproofSpecConformance") {
+  group = "verification"
+  description = "Run canonical IntentProof specification (`intentproof-spec`) Vitest oracle (Node.js + npm on PATH)"
+  commandLine("bash", rootProject.file("scripts/spec-conformance.sh").absolutePath)
 }
 
 // Sonatype Central (replaces legacy OSSRH). Credentials: project properties

@@ -14,4 +14,4 @@ Include: affected version or commit, reproduction steps, and impact assessment i
 
 ## Scope
 
-This policy covers the **`intentproof-sdk-java`** library and its build. Consumer applications (how you configure **`HttpExporter`**, credentials, PII in events) remain your responsibility; see the **Security** section in [`README.md`](README.md).
+This policy covers the **IntentProof** Java SDK (this repository, **`io.github.intentproof:intentproof-sdk`** on Maven Central) and its build. Consumer applications (how you configure **`HttpExporter`**, credentials, PII in events) remain your responsibility; see the **Security** section in [`README.md`](README.md).
