@@ -6,10 +6,14 @@ All notable changes to this repository are documented here. **Maven Central** pu
 
 ## Unreleased
 
+## 0.1.1 — 2026-05-04
+
+Git tag [`v0.1.1`](https://github.com/IntentProof/intentproof-sdk-java/releases/tag/v0.1.1); Maven **`io.github.intentproof:intentproof-sdk:0.1.1`**.
+
 - Add this changelog.
 - **Specification conformance (local):** Gradle task **`intentproofSpecConformance`** and [`scripts/spec-conformance.sh`](scripts/spec-conformance.sh) run the canonical [`intentproof-spec`](https://github.com/IntentProof/intentproof-spec) Vitest oracle against a sibling checkout (`../intentproof-spec`) or **`INTENTPROOF_SPEC_ROOT`**.
 - **CI:** run the same canonical oracle on every push/PR by checking out `intentproof-spec` in [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
-- **Docs & metadata:** README section for the specification repo and release-history pointer; CONTRIBUTING links to the Node and Python SDK repositories; SECURITY and POM **SCM** URLs aligned with **`github.com/IntentProof`**; Gradle **`description`** string; GitHub Release title uses **IntentProof Java SDK** (see [`.github/workflows/release.yml`](.github/workflows/release.yml)).
+- **Docs & metadata:** README section for the specification repo and release-history pointer; CONTRIBUTING links to the Node and Python SDK repositories; SECURITY and POM **SCM** URLs use **`github.com/IntentProof`**; Gradle **`description`** string; GitHub Release title **IntentProof Java SDK** (see [`.github/workflows/release.yml`](.github/workflows/release.yml)).
 
 ## 0.1.0 — 2026-05-04
 
