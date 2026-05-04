@@ -64,7 +64,7 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           TAG="${GITHUB_REF_NAME}"
           gh release create "${TAG}" \
-            --title "intentproof-sdk ${VERSION}" \
+            --title "IntentProof Java SDK ${VERSION}" \
             --notes "Maven Central: \`io.github.intentproof:intentproof-sdk:${VERSION}\`" \
             "build/libs/intentproof-sdk-${VERSION}.jar" \
             "build/libs/intentproof-sdk-${VERSION}-sources.jar" \

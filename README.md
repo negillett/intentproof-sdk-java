@@ -33,7 +33,7 @@ It records intent alongside execution so systems can be verified, not just obser
 
 It's 4:47 on a Friday. A customer insists the critical action never happened. Support sees scattered traces; engineering sees green checks; finance asks for **one** clean chain: what was **supposed** to occur, what **did** occur, and whether the outcome is **complete**.
 
-Ordinary telemetry shows that *something ran*. It rarely ships an **auditable story** you can hand to someone who doesn't read your codebase. IntentProof exists for when the question stops being "what was logged?" and starts being **"prove it."**
+Ordinary telemetry shows that *something ran*. It rarely ships an **auditable story** you can hand to someone who doesn't read your codebase. **IntentProof** exists for when the question stops being "what was logged?" and starts being **"prove it."**
 
 ## Requirements
 
@@ -44,7 +44,7 @@ Ordinary telemetry shows that *something ran*. It rarely ships an **auditable st
 **Coordinates:** `io.github.intentproof:intentproof-sdk`.
 
 - [Maven Central — `io.github.intentproof:intentproof-sdk`](https://central.sonatype.com/search?q=g:io.github.intentproof+intentproof-sdk)
-- [GitHub Releases — IntentProof/intentproof-sdk-java](https://github.com/IntentProof/intentproof-sdk-java/releases)
+- [GitHub Releases — IntentProof Java SDK](https://github.com/IntentProof/intentproof-sdk-java/releases)
 
 **Maven**
 
@@ -386,9 +386,24 @@ Custom **`body`** serializers: if **`body(event)`** throws, **`HttpExporter`** n
 
 ---
 
+## Canonical specification (`intentproof-spec`)
+
+Schemas, golden oracles, and the **Vitest conformance oracle** live in the **[IntentProof specification repository (`intentproof-spec`)](https://github.com/IntentProof/intentproof-spec)**.
+
+- **CI:** every push/PR runs `scripts/run-conformance.sh` from that repo (see `.github/workflows/ci.yml`).
+- **Local:** clone `intentproof-spec` **next to** this repository (`../intentproof-spec`), then:
+
+  ```bash
+  ./gradlew intentproofSpecConformance
+  ```
+
+  Or set `INTENTPROOF_SPEC_ROOT` and run `bash scripts/spec-conformance.sh`.
+
+---
+
 ## Project development
 
-Layout: **Gradle** (`settings.gradle.kts`, `build.gradle.kts`, `gradle/libs.versions.toml`). The project targets **Java 21** (Gradle Java toolchain). CI runs **`./gradlew check`** on **Temurin 21**.
+Layout: **Gradle** (`settings.gradle.kts`, `build.gradle.kts`, `gradle/libs.versions.toml`). The project targets **Java 21** (Gradle Java toolchain). CI runs **`./gradlew check`** on **Temurin 21**. Release history: [`CHANGELOG.md`](CHANGELOG.md).
 
 Contributing (formatting, tests, coverage, and cross-SDK parity expectations): see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 

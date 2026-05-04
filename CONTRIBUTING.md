@@ -12,7 +12,7 @@ Tagged releases (Maven Central + GitHub Releases) are documented in [`RELEASING.
 
 ## Parity with Node and Python
 
-This library targets **wire-format and behavioral parity** with **`intentproof-sdk-node`** and **`intentproof-sdk-python`**. Treat those repos as behavioral references (do not copy source mechanically). When you change observable behavior, keep the **root `README.md`** accurate for users, and extend the notes below if the Java SDK **intentionally** differs.
+This library targets **wire-format and behavioral parity** with the **IntentProof** TypeScript SDK ([`intentproof-sdk-node`](https://github.com/IntentProof/intentproof-sdk-node)) and **IntentProof** Python SDK ([`intentproof-sdk-python`](https://github.com/IntentProof/intentproof-sdk-python)). Treat those repos as behavioral references (do not copy source mechanically). When you change observable behavior, keep the **root `README.md`** accurate for users, and extend the notes below if the Java SDK **intentionally** differs.
 
 **Naming:** Public options use **camelCase** (JSON / Node alignment), e.g. `correlationId`, `captureInput`. Static entrypoints live on **`IntentProof`**; `getIntentProofClient()` is an alias for `getClient()`. Published Maven coordinates: **`io.github.intentproof:intentproof-sdk`**.
 
