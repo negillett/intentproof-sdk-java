@@ -6,13 +6,24 @@ All notable changes to this repository are documented here. **Maven Central** pu
 
 ## Unreleased
 
-- **Spec-first wire models:** generate Jackson POJOs from pinned **`intentproof-spec`** schemas (jsonschema2pojo + `scripts/prepare_java_codegen_schema.py`) into **`com.intentproof.sdk.generated.v1`**; refactor **`ExecutionEvent`**, **`ExecutionWire`**, and **`IntentProofClient`** around generated types and drop handwritten **`ExecutionStatus`**.
-- **Immutable spec pin:** declare **`intentproofSpecVersion`** and **`intentproofSpecCommit`** in **`gradle.properties`**; CI checks out **`intentproof-spec`** at that commit (fetch-depth `0`), runs **`scripts/check-sdk-spec-pin.sh`**, and uploads **`conformance-report.json`** from the canonical oracle job.
-- **Drift and provenance guards:** add **`scripts/check-no-bundled-schema.sh`**, **`scripts/verify-generated-pojos.sh`** (regenerate into **`generated/v1`** then `git diff`), and **`scripts/check-no-handwritten-model-types.sh`** (delegates to shared **`intentproof-spec`** policy).
-- **Gradle:** register **`intentproofGenerateSchemaSources`** / schema preparation, tie codegen ordering before Spotless/Javadoc/JaCoCo where needed, and expose **`intentproofSpecConformance`** on pinned **`INTENTPROOF_SPEC_ROOT`** / **`-PintentproofSpecRoot`**.
-- **CI / workflows:** **`hardening`** audit; **`build`** pin guard + drift verify + **`check`**; **`vulnerability-scan`** and **`release`** checkout pinned **`intentproof-spec`** and set **`INTENTPROOF_SPEC_ROOT`** for Gradle (**`jar`** / **`check`** run schema prep); dependency-review / submission refreshed.
-- **Tests & fixtures:** expand execution-wire coverage (**`ExecutionWireCoverageTest`**) and align fixtures/tests with generated wire shapes.
-- **Docs:** README and CONTRIBUTING updated for pinned spec checkout, drift checks, and no-handwritten-model policy.
+- None yet.
+
+## 0.1.2 — 2026-05-06
+
+- **Spec-first generated wire model layer:** replace handwritten wire-model
+  ownership with jsonschema2pojo output from pinned `intentproof-spec`
+  schemas (`generated/v1`), including `ExecutionEvent`/`ExecutionWire`
+  integration updates.
+- **Pinning and hardening enforcement:** add immutable spec version+commit
+  declarations in `gradle.properties`; enforce pin validity, no bundled
+  schemas, no handwritten wire models, and generated-source drift checks via
+  dedicated scripts.
+- **Build/CI reliability:** add schema preparation/codegen task chain and
+  deterministic task ordering around Spotless/Javadoc/JaCoCo; harden CI and
+  release workflows to check out pinned spec SHA and run conformance/drift
+  gates.
+- **Parity and quality coverage:** expand execution-wire tests/fixtures and
+  align docs (README/CONTRIBUTING) with spec-pinned development workflow.
 
 ## 0.1.1 — 2026-05-04
 
