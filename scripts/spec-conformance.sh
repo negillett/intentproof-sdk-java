@@ -19,4 +19,6 @@ if [[ -z "$spec_root" || ! -f "${spec_root}/scripts/run-conformance.sh" ]]; then
   exit 1
 fi
 
+bash "${sdk_root}/scripts/check-sdk-spec-pin.sh" "$spec_root"
+
 exec bash "${spec_root}/scripts/run-conformance.sh" "$spec_root"

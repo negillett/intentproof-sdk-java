@@ -6,6 +6,14 @@ All notable changes to this repository are documented here. **Maven Central** pu
 
 ## Unreleased
 
+- **Spec-first wire models:** generate Jackson POJOs from pinned **`intentproof-spec`** schemas (jsonschema2pojo + `scripts/prepare_java_codegen_schema.py`) into **`com.intentproof.sdk.generated.v1`**; refactor **`ExecutionEvent`**, **`ExecutionWire`**, and **`IntentProofClient`** around generated types and drop handwritten **`ExecutionStatus`**.
+- **Immutable spec pin:** declare **`intentproofSpecVersion`** and **`intentproofSpecCommit`** in **`gradle.properties`**; CI checks out **`intentproof-spec`** at that commit (fetch-depth `0`), runs **`scripts/check-sdk-spec-pin.sh`**, and uploads **`conformance-report.json`** from the canonical oracle job.
+- **Drift and provenance guards:** add **`scripts/check-no-bundled-schema.sh`**, **`scripts/verify-generated-pojos.sh`** (regenerate into **`generated/v1`** then `git diff`), and **`scripts/check-no-handwritten-model-types.sh`** (delegates to shared **`intentproof-spec`** policy).
+- **Gradle:** register **`intentproofGenerateSchemaSources`** / schema preparation, tie codegen ordering before Spotless/Javadoc/JaCoCo where needed, and expose **`intentproofSpecConformance`** on pinned **`INTENTPROOF_SPEC_ROOT`** / **`-PintentproofSpecRoot`**.
+- **CI / workflows:** **`hardening`** audit; **`build`** pin guard + drift verify + **`check`**; **`vulnerability-scan`** and **`release`** checkout pinned **`intentproof-spec`** and set **`INTENTPROOF_SPEC_ROOT`** for Gradle (**`jar`** / **`check`** run schema prep); dependency-review / submission refreshed.
+- **Tests & fixtures:** expand execution-wire coverage (**`ExecutionWireCoverageTest`**) and align fixtures/tests with generated wire shapes.
+- **Docs:** README and CONTRIBUTING updated for pinned spec checkout, drift checks, and no-handwritten-model policy.
+
 ## 0.1.1 — 2026-05-04
 
 Git tag [`v0.1.1`](https://github.com/IntentProof/intentproof-sdk-java/releases/tag/v0.1.1); Maven **`io.github.intentproof:intentproof-sdk:0.1.1`**.

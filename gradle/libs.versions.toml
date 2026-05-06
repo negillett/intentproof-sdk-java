@@ -9,6 +9,7 @@ mockito = "5.23.0"
 spotless = "8.4.0"
 googleJavaFormat = "1.35.0"
 jacoco = "0.8.14"
+jsonschema2pojo = "1.2.2"
 
 [libraries]
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
@@ -18,6 +19,7 @@ mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform" }
 
 [plugins]
+jsonschema2pojo = { id = "org.jsonschema2pojo", version.ref = "jsonschema2pojo" }
 nexuspublish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish" }
 errorprone = { id = "net.ltgt.errorprone", version.ref = "errorprone-plugin" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

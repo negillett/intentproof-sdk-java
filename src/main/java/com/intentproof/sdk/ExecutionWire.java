@@ -3,6 +3,8 @@ package com.intentproof.sdk;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.intentproof.sdk.generated.v1.ExecutionError;
+import com.intentproof.sdk.generated.v1.IntentProofExecutionEventV1;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,33 +30,58 @@ public final class ExecutionWire {
    */
   public static Map<String, Object> toWireMap(ExecutionEvent e) {
     Map<String, Object> out = new LinkedHashMap<>();
-    out.put("id", e.id());
-    out.put("intent", e.intent());
-    out.put("action", e.action());
-    out.put("inputs", e.inputs());
-    out.put("status", e.status() == ExecutionStatus.ok ? "ok" : "error");
-    out.put("startedAt", e.startedAt());
-    out.put("completedAt", e.completedAt());
-    out.put("durationMs", e.durationMs());
-    if (e.correlationId() != null) {
-      out.put("correlationId", e.correlationId());
+    out.put("id", e.getId());
+    out.put("intent", e.getIntent());
+    out.put("action", e.getAction());
+    out.put("inputs", inputsWire(e));
+    boolean ok = e.getStatus() == IntentProofExecutionEventV1.Status.OK;
+    out.put("status", ok ? "ok" : "error");
+    out.put("startedAt", e.getStartedAt());
+    out.put("completedAt", e.getCompletedAt());
+    Number dur = e.getDurationMs();
+    out.put(
+        "durationMs",
+        dur == null ? null : (dur.doubleValue() == dur.longValue() ? dur.longValue() : dur));
+    if (e.getCorrelationId() != null) {
+      out.put("correlationId", e.getCorrelationId());
     }
-    if (e.status() == ExecutionStatus.ok || e.output() != null) {
-      out.put("output", e.output());
+    if (ok || e.getOutput() != null) {
+      out.put("output", e.getOutput());
     }
-    if (e.error() != null) {
+    if (e.getError() != null) {
       Map<String, Object> err = new LinkedHashMap<>();
-      err.put("name", e.error().name());
-      err.put("message", e.error().message());
-      if (e.error().stack() != null) {
-        err.put("stack", e.error().stack());
+      ExecutionError er = e.getError();
+      err.put("name", er.getName());
+      err.put("message", er.getMessage());
+      if (er.getStack() != null) {
+        err.put("stack", er.getStack());
+      }
+      if (er.getCode() != null) {
+        err.put("code", er.getCode());
       }
       out.put("error", err);
     }
-    if (e.attributes() != null && !e.attributes().isEmpty()) {
-      out.put("attributes", e.attributes());
+    Map<String, Object> attrs = attributesWire(e);
+    if (attrs != null && !attrs.isEmpty()) {
+      out.put("attributes", attrs);
     }
     return out;
+  }
+
+  private static Object inputsWire(ExecutionEvent e) {
+    if (e.getInputs() == null) {
+      return Map.of();
+    }
+    Map<String, Object> m = e.getInputs().getAdditionalProperties();
+    return m.isEmpty() ? Map.of() : m;
+  }
+
+  private static Map<String, Object> attributesWire(ExecutionEvent e) {
+    if (e.getAttributes() == null) {
+      return null;
+    }
+    Map<String, Object> m = e.getAttributes().getAdditionalProperties();
+    return m.isEmpty() ? null : m;
   }
 
   /**
@@ -83,16 +110,20 @@ public final class ExecutionWire {
         Map<String, Object> partial = new LinkedHashMap<>();
         partial.put("intentproof", "1");
         Map<String, Object> eventPartial = new LinkedHashMap<>();
-        eventPartial.put("id", event.id());
-        eventPartial.put("action", event.action());
-        eventPartial.put("intent", event.intent());
-        eventPartial.put("status", event.status() == ExecutionStatus.ok ? "ok" : "error");
-        if (event.correlationId() != null) {
-          eventPartial.put("correlationId", event.correlationId());
+        eventPartial.put("id", event.getId());
+        eventPartial.put("action", event.getAction());
+        eventPartial.put("intent", event.getIntent());
+        boolean ok = event.getStatus() == IntentProofExecutionEventV1.Status.OK;
+        eventPartial.put("status", ok ? "ok" : "error");
+        if (event.getCorrelationId() != null) {
+          eventPartial.put("correlationId", event.getCorrelationId());
         }
-        eventPartial.put("startedAt", event.startedAt());
-        eventPartial.put("completedAt", event.completedAt());
-        eventPartial.put("durationMs", event.durationMs());
+        eventPartial.put("startedAt", event.getStartedAt());
+        eventPartial.put("completedAt", event.getCompletedAt());
+        Number dur = event.getDurationMs();
+        eventPartial.put(
+            "durationMs",
+            dur == null ? null : (dur.doubleValue() == dur.longValue() ? dur.longValue() : dur));
         partial.put("eventPartial", eventPartial);
         partial.put("note", "full event not JSON-serializable");
         return mapper.writeValueAsString(partial);

@@ -1,5 +1,9 @@
 package com.intentproof.sdk;
 
+import com.intentproof.sdk.generated.v1.Attributes;
+import com.intentproof.sdk.generated.v1.ExecutionError;
+import com.intentproof.sdk.generated.v1.Inputs;
+import com.intentproof.sdk.generated.v1.IntentProofExecutionEventV1;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -409,20 +413,19 @@ public final class IntentProofClient {
     } else {
       output = Snapshot.snapshot(result, serOpts);
     }
-    ExecutionEvent event =
-        new ExecutionEvent(
-            id,
-            intent,
-            action,
-            inputs,
-            ExecutionStatus.ok,
-            startedAt,
-            completedAt,
-            durationMs,
-            correlationId,
-            output,
-            null,
-            attrs);
+    ExecutionEvent event = new ExecutionEvent();
+    event.setId(id);
+    event.setIntent(intent);
+    event.setAction(action);
+    event.setInputs(inputsFromCaptured(inputs));
+    event.setStatus(IntentProofExecutionEventV1.Status.OK);
+    event.setStartedAt(startedAt);
+    event.setCompletedAt(completedAt);
+    event.setDurationMs((double) durationMs);
+    event.setCorrelationId(correlationId);
+    event.setOutput(output);
+    event.setError(null);
+    event.setAttributes(attributesFromMap(attrs));
     dispatch(event);
   }
 
@@ -453,20 +456,23 @@ public final class IntentProofClient {
         output = null;
       }
     }
-    ExecutionEvent event =
-        new ExecutionEvent(
-            id,
-            intent,
-            action,
-            inputs,
-            ExecutionStatus.error,
-            startedAt,
-            completedAt,
-            durationMs,
-            correlationId,
-            output,
-            errSnap,
-            attrs);
+    ExecutionEvent event = new ExecutionEvent();
+    event.setId(id);
+    event.setIntent(intent);
+    event.setAction(action);
+    event.setInputs(inputsFromCaptured(inputs));
+    event.setStatus(IntentProofExecutionEventV1.Status.ERROR);
+    event.setStartedAt(startedAt);
+    event.setCompletedAt(completedAt);
+    event.setDurationMs((double) durationMs);
+    event.setCorrelationId(correlationId);
+    event.setOutput(output);
+    ExecutionError genErr = new ExecutionError();
+    genErr.setName(errSnap.name());
+    genErr.setMessage(errSnap.message());
+    genErr.setStack(errSnap.stack());
+    event.setError(genErr);
+    event.setAttributes(attributesFromMap(attrs));
     dispatch(event);
   }
 
@@ -544,5 +550,31 @@ public final class IntentProofClient {
 
   private static void defaultOnExporterError(Throwable error, ExecutionEvent event) {
     System.err.println("[intentproof] exporter error " + error);
+  }
+
+  private static Inputs inputsFromCaptured(Object inputs) {
+    Inputs in = new Inputs();
+    if (inputs == null) {
+      return in;
+    }
+    if (inputs instanceof Map<?, ?> m) {
+      for (Map.Entry<?, ?> e : m.entrySet()) {
+        in.setAdditionalProperty(String.valueOf(e.getKey()), e.getValue());
+      }
+      return in;
+    }
+    in.setAdditionalProperty("captured", inputs);
+    return in;
+  }
+
+  private static Attributes attributesFromMap(Map<String, Object> attrs) {
+    if (attrs == null || attrs.isEmpty()) {
+      return null;
+    }
+    Attributes a = new Attributes();
+    for (Map.Entry<String, Object> e : attrs.entrySet()) {
+      a.setAdditionalProperty(e.getKey(), e.getValue());
+    }
+    return a;
   }
 }

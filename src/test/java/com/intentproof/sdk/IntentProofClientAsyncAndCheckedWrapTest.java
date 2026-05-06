@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.intentproof.sdk.fixtures.SneakyThrows;
+import com.intentproof.sdk.generated.v1.IntentProofExecutionEventV1;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -45,7 +46,7 @@ class IntentProofClientAsyncAndCheckedWrapTest {
         assertThrows(java.util.concurrent.CompletionException.class, () -> bad.apply(1).join());
     assertInstanceOf(OddThrowable.class, joinEx.getCause());
     ExecutionEvent last = mem.getEvents().get(mem.getEvents().size() - 1);
-    assertEquals(ExecutionStatus.error, last.status());
+    assertEquals(IntentProofExecutionEventV1.Status.ERROR, last.getStatus());
   }
 
   @Test
@@ -63,6 +64,6 @@ class IntentProofClientAsyncAndCheckedWrapTest {
     RuntimeException rex = assertThrows(RuntimeException.class, wrapped::get);
     assertInstanceOf(OddChecked.class, rex.getCause());
     ExecutionEvent last = mem.getEvents().get(mem.getEvents().size() - 1);
-    assertEquals(ExecutionStatus.error, last.status());
+    assertEquals(IntentProofExecutionEventV1.Status.ERROR, last.getStatus());
   }
 }

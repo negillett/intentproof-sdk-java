@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
+import com.intentproof.sdk.generated.v1.ExecutionError;
+import com.intentproof.sdk.generated.v1.Inputs;
+import com.intentproof.sdk.generated.v1.IntentProofExecutionEventV1;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
@@ -12,20 +14,19 @@ class ExecutionWirePartialEnvelopeTest {
 
   @Test
   void safeJsonEnvelopePartialIncludesCorrelationWhenPrimarySerializationFails() {
-    ExecutionEvent ev =
-        new ExecutionEvent(
-            UUID.randomUUID().toString(),
-            "intent",
-            "action",
-            List.of(),
-            ExecutionStatus.ok,
-            "2026-01-01T00:00:00.000Z",
-            "2026-01-01T00:00:00.001Z",
-            1L,
-            "corr-partial",
-            1,
-            null,
-            null);
+    ExecutionEvent ev = new ExecutionEvent();
+    ev.setId(UUID.randomUUID().toString());
+    ev.setIntent("intent");
+    ev.setAction("action");
+    ev.setInputs(new Inputs());
+    ev.setStatus(IntentProofExecutionEventV1.Status.OK);
+    ev.setStartedAt("2026-01-01T00:00:00.000Z");
+    ev.setCompletedAt("2026-01-01T00:00:00.001Z");
+    ev.setDurationMs(1.0);
+    ev.setCorrelationId("corr-partial");
+    ev.setOutput(1);
+    ev.setError(null);
+    ev.setAttributes(null);
     ObjectMapper once =
         new ObjectMapper() {
           private boolean failed;
@@ -45,20 +46,23 @@ class ExecutionWirePartialEnvelopeTest {
 
   @Test
   void safeJsonEnvelopePartialUsesErrorStatusWhenEventFailed() {
-    ExecutionEvent ev =
-        new ExecutionEvent(
-            UUID.randomUUID().toString(),
-            "intent",
-            "action",
-            List.of(),
-            ExecutionStatus.error,
-            "2026-01-01T00:00:00.000Z",
-            "2026-01-01T00:00:00.001Z",
-            1L,
-            null,
-            null,
-            new ExecutionErrorSnapshot("E", "m", null),
-            null);
+    ExecutionEvent ev = new ExecutionEvent();
+    ev.setId(UUID.randomUUID().toString());
+    ev.setIntent("intent");
+    ev.setAction("action");
+    ev.setInputs(new Inputs());
+    ev.setStatus(IntentProofExecutionEventV1.Status.ERROR);
+    ev.setStartedAt("2026-01-01T00:00:00.000Z");
+    ev.setCompletedAt("2026-01-01T00:00:00.001Z");
+    ev.setDurationMs(1.0);
+    ev.setCorrelationId(null);
+    ev.setOutput(null);
+    ExecutionError err = new ExecutionError();
+    err.setName("E");
+    err.setMessage("m");
+    err.setStack(null);
+    ev.setError(err);
+    ev.setAttributes(null);
     ObjectMapper once =
         new ObjectMapper() {
           private boolean failed;
