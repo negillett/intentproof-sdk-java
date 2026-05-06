@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.intentproof.sdk.generated.v1.Inputs;
+import com.intentproof.sdk.generated.v1.IntentProofExecutionEventV1;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -69,7 +71,7 @@ class IntentProofClientTest {
                     "should_not_win")));
 
     ExecutionEvent e = mem.getEvents().get(mem.getEvents().size() - 1);
-    assertEquals("req_outer", e.correlationId());
+    assertEquals("req_outer", e.getCorrelationId());
 
     mem.clear();
     Function<Map<String, Object>, Map<String, Object>> scoped =
@@ -83,7 +85,7 @@ class IntentProofClientTest {
 
     scoped.apply(Map.of());
     e = mem.getEvents().get(mem.getEvents().size() - 1);
-    assertEquals("explicit-wrap-id", e.correlationId());
+    assertEquals("explicit-wrap-id", e.getCorrelationId());
   }
 
   @Test
@@ -126,10 +128,10 @@ class IntentProofClientTest {
     assertThrows(RuntimeException.class, () -> pay.apply(Map.of("paymentIntentId", "pi_x")));
 
     ExecutionEvent e = mem.getEvents().get(0);
-    assertEquals(ExecutionStatus.error, e.status());
-    assertEquals("RuntimeException", e.error().name());
-    assertEquals("Your card was declined.", e.error().message());
-    assertEquals(Map.of("code", "card_declined", "retryable", false), e.output());
+    assertEquals(IntentProofExecutionEventV1.Status.ERROR, e.getStatus());
+    assertEquals("RuntimeException", e.getError().getName());
+    assertEquals("Your card was declined.", e.getError().getMessage());
+    assertEquals(Map.of("code", "card_declined", "retryable", false), e.getOutput());
   }
 
   @Test
@@ -148,21 +150,38 @@ class IntentProofClientTest {
   }
 
   @Test
+  void captureInputNonMapUsesCapturedAdditionalProperty() {
+    MemoryExporter mem = new MemoryExporter();
+    IntentProofClient c =
+        IntentProof.createClient(IntentProofConfig.builder().exporters(List.of(mem)).build());
+    Function<Integer, Integer> f =
+        c.wrap(
+            WrapOptions.builder()
+                .intent("non-map inputs")
+                .action("a.nonmap")
+                .captureInput(args -> args.get(0))
+                .build(),
+            i -> i + 1);
+    assertEquals(8, f.apply(7));
+    ExecutionEvent e = mem.getEvents().get(0);
+    assertEquals(7, e.getInputs().getAdditionalProperties().get("captured"));
+  }
+
+  @Test
   void wireOmitsEmptyAttributes() {
-    ExecutionEvent ev =
-        new ExecutionEvent(
-            "id1",
-            "i",
-            "a",
-            List.of(),
-            ExecutionStatus.ok,
-            "2026-01-01T00:00:00.000Z",
-            "2026-01-01T00:00:00.001Z",
-            1L,
-            null,
-            42,
-            null,
-            null);
+    ExecutionEvent ev = new ExecutionEvent();
+    ev.setId("id1");
+    ev.setIntent("i");
+    ev.setAction("a");
+    ev.setInputs(new Inputs());
+    ev.setStatus(IntentProofExecutionEventV1.Status.OK);
+    ev.setStartedAt("2026-01-01T00:00:00.000Z");
+    ev.setCompletedAt("2026-01-01T00:00:00.001Z");
+    ev.setDurationMs(1.0);
+    ev.setCorrelationId(null);
+    ev.setOutput(42);
+    ev.setError(null);
+    ev.setAttributes(null);
     Map<String, Object> wire = ExecutionWire.toWireMap(ev);
     assertNull(wire.get("attributes"));
   }

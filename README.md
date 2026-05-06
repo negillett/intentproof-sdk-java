@@ -388,16 +388,25 @@ Custom **`body`** serializers: if **`body(event)`** throws, **`HttpExporter`** n
 
 ## Canonical specification (`intentproof-spec`)
 
+**Shared pins and terminology** (`INTENTPROOF_SPEC_ROOT`, **`intentproofSpecCommit`**, script names): **[`intentproof-spec` CONTRIBUTING — Terminology](https://github.com/IntentProof/intentproof-spec/blob/main/CONTRIBUTING.md#terminology-shared-with-sdk-repos)**.
+
 Schemas, golden oracles, and the **Vitest conformance oracle** live in the **[IntentProof specification repository (`intentproof-spec`)](https://github.com/IntentProof/intentproof-spec)**.
 
-- **CI:** every push/PR runs `scripts/run-conformance.sh` from that repo (see `.github/workflows/ci.yml`).
-- **Local:** clone `intentproof-spec` **next to** this repository (`../intentproof-spec`), then:
+- **Version pin:** **`intentproofSpecVersion`** and **`intentproofSpecCommit`** in **`gradle.properties`** match **`spec.json`** and the spec **`HEAD`** checkout; **`scripts/check-sdk-spec-pin.sh`** enforces this before conformance.
+
+- **CI:** every push/PR checks out **`intentproof-spec`** at the pinned commit and runs **`scripts/spec-conformance.sh`** (canonical oracle + replay; see `.github/workflows/ci.yml`).
+
+- **Local:** clone **`intentproof-spec`** **next to** this repository (`../intentproof-spec`), then:
 
   ```bash
   ./gradlew intentproofSpecConformance
   ```
 
-  Or set `INTENTPROOF_SPEC_ROOT` and run `bash scripts/spec-conformance.sh`.
+  Or set **`INTENTPROOF_SPEC_ROOT`** and run **`bash scripts/spec-conformance.sh`**.
+
+- **Generated POJOs:** drift check with **`bash scripts/verify-generated-pojos.sh`** (after **`INTENTPROOF_SPEC_ROOT`** is set).
+
+- **No handwritten wire models:** **`scripts/check-no-handwritten-model-types.sh`** delegates to **`intentproof-spec`** (also covered by **`npm run ci`** / Gradle **`check`** flows).
 
 ---
 
@@ -405,7 +414,7 @@ Schemas, golden oracles, and the **Vitest conformance oracle** live in the **[In
 
 Layout: **Gradle** (`settings.gradle.kts`, `build.gradle.kts`, `gradle/libs.versions.toml`). The project targets **Java 21** (Gradle Java toolchain). CI runs **`./gradlew check`** on **Temurin 21**. Release history: [`CHANGELOG.md`](CHANGELOG.md).
 
-Contributing (formatting, tests, coverage, and cross-SDK parity expectations): see [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Contributing (formatting, tests, coverage, cross-SDK parity, **shared `intentproof-spec` terminology**): see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 Build locally:
 

@@ -7,9 +7,10 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import com.intentproof.sdk.fixtures.ExecutionEventFixtures;
+import com.intentproof.sdk.generated.v1.Inputs;
+import com.intentproof.sdk.generated.v1.IntentProofExecutionEventV1;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import org.junit.jupiter.api.Test;
@@ -31,20 +32,20 @@ class HttpExporterMockTransportTest {
                 .onError(onErr)
                 .build(),
             client);
-    ex.export(
-        new ExecutionEvent(
-            "id",
-            "i",
-            "a",
-            List.of(),
-            ExecutionStatus.ok,
-            "2026-01-01T00:00:00.000Z",
-            "2026-01-01T00:00:00.001Z",
-            1L,
-            null,
-            1,
-            null,
-            null));
+    ExecutionEvent ev = new ExecutionEvent();
+    ev.setId("id");
+    ev.setIntent("i");
+    ev.setAction("a");
+    ev.setInputs(new Inputs());
+    ev.setStatus(IntentProofExecutionEventV1.Status.OK);
+    ev.setStartedAt("2026-01-01T00:00:00.000Z");
+    ev.setCompletedAt("2026-01-01T00:00:00.001Z");
+    ev.setDurationMs(1.0);
+    ev.setCorrelationId(null);
+    ev.setOutput(1);
+    ev.setError(null);
+    ev.setAttributes(null);
+    ex.export(ev);
     verify(onErr, timeout(5000)).accept(any(), any());
     ((CompletableFuture<?>) ex.flush()).get();
   }

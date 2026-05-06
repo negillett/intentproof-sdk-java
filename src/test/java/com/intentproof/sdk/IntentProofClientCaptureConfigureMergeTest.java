@@ -61,8 +61,8 @@ class IntentProofClientCaptureConfigureMergeTest {
             });
     assertThrows(RuntimeException.class, () -> cerrCatch.apply(1));
     ExecutionEvent ev = mem.getEvents().get(mem.getEvents().size() - 1);
-    assertNull(ev.output());
-    assertNull(ev.error().stack());
+    assertNull(ev.getOutput());
+    assertNull(ev.getError().getStack());
   }
 
   @Test
@@ -118,6 +118,6 @@ class IntentProofClientCaptureConfigureMergeTest {
                   throw new RuntimeException("boom");
                 });
     assertThrows(RuntimeException.class, err::run);
-    assertNotNull(mem.getEvents().get(0).error().stack());
+    assertNotNull(mem.getEvents().get(0).getError().getStack());
   }
 }

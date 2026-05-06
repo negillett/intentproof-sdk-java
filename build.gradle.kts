@@ -1,5 +1,6 @@
 import net.ltgt.gradle.errorprone.errorprone
 import org.gradle.api.component.AdhocComponentWithVariants
+import org.jsonschema2pojo.gradle.JsonSchemaExtension
 
 plugins {
   `java-library`
@@ -7,6 +8,7 @@ plugins {
   `maven-publish`
   signing
   jacoco
+  alias(libs.plugins.jsonschema2pojo)
   alias(libs.plugins.nexuspublish)
   alias(libs.plugins.errorprone)
   alias(libs.plugins.spotless)
@@ -84,6 +86,10 @@ tasks.withType<JavaCompile>().configureEach {
     enabled.set(name == "compileJava")
     // Doclint requires @return tags; one-line summaries would duplicate those lines.
     disable("MissingSummary")
+    if (name == "compileJava") {
+      // jsonschema2pojo output is checked in; do not require hand-fixing third-party generated code.
+      excludedPaths.set(".*/com/intentproof/sdk/generated/.*")
+    }
   }
 }
 
@@ -122,8 +128,18 @@ tasks.jacocoTestReport {
   }
 }
 
+val intentproofJacocoClassDirs =
+    files(
+        sourceSets.main.get().output.classesDirs.map { dir ->
+          fileTree(dir) { exclude("**/com/intentproof/sdk/generated/**") }
+        },
+    )
+
+tasks.jacocoTestReport { classDirectories.setFrom(intentproofJacocoClassDirs) }
+
 tasks.jacocoTestCoverageVerification {
   dependsOn(tasks.test)
+  classDirectories.setFrom(intentproofJacocoClassDirs)
   violationRules {
     rule {
       limit {
@@ -150,6 +166,9 @@ tasks.check {
 spotless {
   java {
     target("src/**/*.java")
+    targetExclude(
+        "**/com/intentproof/sdk/generated/**/*.java",
+    )
     googleJavaFormat(libs.versions.googleJavaFormat.get())
   }
   kotlinGradle { target("*.gradle.kts") }
@@ -214,6 +233,73 @@ tasks.register<Exec>("intentproofSpecConformance") {
   group = "verification"
   description = "Run canonical IntentProof specification (`intentproof-spec`) Vitest oracle (Node.js + npm on PATH)"
   commandLine("bash", rootProject.file("scripts/spec-conformance.sh").absolutePath)
+}
+
+val intentproofSpecRootProvider =
+    providers
+        .gradleProperty("intentproofSpecRoot")
+        .orElse(providers.environmentVariable("INTENTPROOF_SPEC_ROOT"))
+        .orElse(layout.projectDirectory.dir("../intentproof-spec").asFile.absolutePath)
+
+tasks.register<Exec>("prepareIntentProofCodegenSchemas") {
+  group = "verification"
+  description =
+      "Patch execution_event schema for jsonschema2pojo (JsonValue recursion, outputs; matches Python SDK)"
+  val outDir = layout.buildDirectory.dir("prepared-schemas")
+  outputs.dir(outDir)
+  commandLine(
+      "python3",
+      rootProject.file("scripts/prepare_java_codegen_schema.py").absolutePath,
+      outDir.get().asFile.absolutePath,
+  )
+  environment("INTENTPROOF_SPEC_ROOT", intentproofSpecRootProvider.get())
+}
+
+extensions.configure<JsonSchemaExtension>("jsonSchema2Pojo") {
+  setSource(files(layout.buildDirectory.dir("prepared-schemas").get().asFile))
+  targetDirectory = file("${projectDir}/src/main/java")
+  targetPackage = "com.intentproof.sdk.generated.v1"
+  setAnnotationStyle("jackson")
+  setSourceType("jsonschema")
+  // Align with JSON wire strings (RFC 3339) instead of java.util.Date for date-time fields.
+  dateTimeType = "java.lang.String"
+  isIncludeAdditionalProperties = true
+  isRemoveOldOutput = false
+}
+
+tasks.named("generateJsonSchema2Pojo").configure {
+  dependsOn(tasks.named("prepareIntentProofCodegenSchemas"))
+  doLast {
+    val genRoot = file("${projectDir}/src/main/java/com/intentproof/sdk/generated/v1")
+    genRoot.walkTopDown().maxDepth(2).filter { it.isFile && it.extension == "java" }.forEach { f ->
+      val text = f.readText()
+      val fixed =
+          text.replace(
+              "IntentProofExecutionEventV1 .Status",
+              "IntentProofExecutionEventV1.Status",
+          )
+      if (fixed != text) {
+        f.writeText(fixed)
+      }
+    }
+  }
+}
+
+tasks.register("intentproofGenerateSchemaSources") {
+  group = "verification"
+  description =
+      "Prepare schemas + run jsonschema2pojo into src/main/java/com/intentproof/sdk/generated/v1"
+  dependsOn("generateJsonSchema2Pojo")
+}
+
+// Gradle 9+: spotless and codegen both touch src/main/java; enforce deterministic ordering.
+tasks.named("spotlessJava").configure { dependsOn(tasks.named("generateJsonSchema2Pojo")) }
+
+// Gradle 9 implicit dependency checks: anything reading src/main/java must run after codegen.
+tasks.named("javadoc").configure { dependsOn(tasks.named("generateJsonSchema2Pojo")) }
+tasks.named("jacocoTestReport").configure { dependsOn(tasks.named("generateJsonSchema2Pojo")) }
+tasks.named("jacocoTestCoverageVerification").configure {
+  dependsOn(tasks.named("generateJsonSchema2Pojo"))
 }
 
 // Sonatype Central (replaces legacy OSSRH). Credentials: project properties

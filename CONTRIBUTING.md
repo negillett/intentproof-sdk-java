@@ -1,5 +1,7 @@
 # Contributing
 
+Cross-repository **pins**, **`INTENTPROOF_*`** environment variables, and script naming are documented in the **[`intentproof-spec` CONTRIBUTING guide](https://github.com/IntentProof/intentproof-spec/blob/main/CONTRIBUTING.md#terminology-shared-with-sdk-repos)**.
+
 Run the full verification suite (formatting, tests, coverage gate):
 
 ```bash
