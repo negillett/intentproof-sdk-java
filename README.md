@@ -1,5 +1,9 @@
 ## **Logs narrate; IntentProof gives you proof.**
 
+[![CI](https://github.com/IntentProof/intentproof-sdk-java/actions/workflows/ci.yml/badge.svg)](https://github.com/IntentProof/intentproof-sdk-java/actions/workflows/ci.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.intentproof/intentproof-sdk)](https://central.sonatype.com/search?q=g:io.github.intentproof+intentproof-sdk)
+[![GitHub release](https://img.shields.io/github/v/release/IntentProof/intentproof-sdk-java)](https://github.com/IntentProof/intentproof-sdk-java/releases)
+
 **IntentProof** is **auditable execution records** for actions that must be defensible—**intent** tied to what actually ran.
 
 **Wrap** the calls that matter; each invocation emits one **verifiable** **`ExecutionEvent`**, structured so intent and outcome can be **reconciled** with reality—not only observed.
@@ -45,6 +49,7 @@ Ordinary telemetry shows that *something ran*. It rarely ships an **auditable st
 
 - [Maven Central — `io.github.intentproof:intentproof-sdk`](https://central.sonatype.com/search?q=g:io.github.intentproof+intentproof-sdk)
 - [GitHub Releases — IntentProof Java SDK](https://github.com/IntentProof/intentproof-sdk-java/releases)
+- [CI artifacts (conformance report + certificate)](https://github.com/IntentProof/intentproof-sdk-java/actions/workflows/ci.yml)
 
 **Maven**
 
@@ -395,6 +400,7 @@ Schemas, golden oracles, and the **Vitest conformance oracle** live in the **[In
 - **Version pin:** **`intentproofSpecVersion`** and **`intentproofSpecCommit`** in **`gradle.properties`** match **`spec.json`** and the spec **`HEAD`** checkout; **`scripts/check-sdk-spec-pin.sh`** enforces this before conformance.
 
 - **CI:** every push/PR checks out **`intentproof-spec`** at the pinned commit and runs **`scripts/spec-conformance.sh`** (canonical oracle + replay; see `.github/workflows/ci.yml`).
+- **Conformance certificate artifact:** the **`intentproof-spec`** job uploads **`conformance-certificate-java`** (plus **`conformance-report-java`**) in each CI run so certificates are directly visible from the workflow run page.
 
 - **Local:** clone **`intentproof-spec`** **next to** this repository (`../intentproof-spec`), then:
 
