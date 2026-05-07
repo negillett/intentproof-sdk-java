@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/IntentProof/intentproof-sdk-java/actions/workflows/ci.yml/badge.svg)](https://github.com/IntentProof/intentproof-sdk-java/actions/workflows/ci.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.intentproof/intentproof-sdk)](https://central.sonatype.com/search?q=g:io.github.intentproof+intentproof-sdk)
+<a href="https://github.com/IntentProof/intentproof-sdk-java/raw/main/conformance-certificate.json" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/conformance_certificate-view-0366d6" alt="Conformance Certificate" /></a>
 
 **IntentProof** is **auditable execution records** for actions that must be defensible—**intent** tied to what actually ran.
 
@@ -46,10 +47,7 @@ Ordinary telemetry shows that *something ran*. It rarely ships an **auditable st
 
 **Coordinates:** `io.github.intentproof:intentproof-sdk`.
 
-- [Maven Central — `io.github.intentproof:intentproof-sdk`](https://central.sonatype.com/search?q=g:io.github.intentproof+intentproof-sdk)
-- [GitHub Releases — IntentProof Java SDK](https://github.com/IntentProof/intentproof-sdk-java/releases)
-- [Latest conformance certificate (repo file)](./artifacts/conformance-certificate.latest.json)
-- [Latest conformance report (repo file)](./artifacts/conformance-report.latest.json)
+Replace **`x.y.z`** with the library version you intend to pin.
 
 **Maven**
 
@@ -352,7 +350,7 @@ try {
 
 ### 3 — Proof delivery over HTTP (same **`ExecutionEvent`** shape)
 
-**`HttpExporter`** POSTs the same **`ExecutionEvent`** your verifiers see in memory—here alongside **`MemoryExporter`** so tests can assert the wire without a real collector. The request omits ambient credentials; the body is **`{ "intentproof": "1", "event": … }`** (see exporter implementation). For authenticated collectors, pass **`headers`** (e.g. **`Authorization`**, API keys) — see [Security](#security).
+**`HttpExporter`** POSTs the same **`ExecutionEvent`** your verifiers see in memory—here alongside **`MemoryExporter`** so tests can assert the wire without a real collector. The request omits ambient credentials; the body is **`{ "intentproof": "1", "event": … }`** (see exporter implementation). For authenticated collectors, pass **`headers`** (e.g. **`Authorization`**, API keys) — see the Security section above.
 
 ```java
 var runProbe =
@@ -376,7 +374,7 @@ runProbe.get();
 
 ## Security
 
-For **vulnerability reporting**, see [`SECURITY.md`](SECURITY.md).
+For **vulnerability reporting**, see **`SECURITY.md`**.
 
 Every **`ExecutionEvent`** you emit is data you may ship off-process. Treat them like audit-grade execution records: they can include PII, secrets, stack traces, and business identifiers depending on your **`snapshot`** / **`capture*`** hooks.
 
@@ -393,14 +391,14 @@ Custom **`body`** serializers: if **`body(event)`** throws, **`HttpExporter`** n
 
 ## Canonical specification (`intentproof-spec`)
 
-**Shared pins and terminology** (`INTENTPROOF_SPEC_ROOT`, **`intentproofSpecCommit`**, script names): **[`intentproof-spec` CONTRIBUTING — Terminology](https://github.com/IntentProof/intentproof-spec/blob/main/CONTRIBUTING.md#terminology-shared-with-sdk-repos)**.
+**Shared pins and terminology** (`INTENTPROOF_SPEC_ROOT`, **`intentproofSpecCommit`**, script names) are documented in the **`intentproof-spec`** repository (`CONTRIBUTING.md`, Terminology).
 
-Schemas, golden oracles, and the **Vitest conformance oracle** live in the **[IntentProof specification repository (`intentproof-spec`)](https://github.com/IntentProof/intentproof-spec)**.
+Schemas, golden oracles, and the **Vitest conformance oracle** live in the **`intentproof-spec`** repository.
 
 - **Version pin:** **`intentproofSpecVersion`** and **`intentproofSpecCommit`** in **`gradle.properties`** match **`spec.json`** and the spec **`HEAD`** checkout; **`scripts/check-sdk-spec-pin.sh`** enforces this before conformance.
 
 - **CI:** every push/PR checks out **`intentproof-spec`** at the pinned commit and runs **`scripts/spec-conformance.sh`** (canonical oracle + replay; see `.github/workflows/ci.yml`).
-- **Conformance certificate artifact:** the **`intentproof-spec`** job uploads **`conformance-certificate-java`** (plus **`conformance-report-java`**) in each CI run and publishes latest snapshots into tracked repo files under **`artifacts/`** on trusted pushes.
+- **Conformance certificate and report:** CI uploads workflow artifacts for each run and, on trusted pushes to the default branch, commits **`conformance-certificate.json`** and **`conformance-report.json`** at this repository root so they stay inspectable on every revision (including before and after spec adoption bumps).
 
 - **Local:** clone **`intentproof-spec`** **next to** this repository (`../intentproof-spec`), then:
 
@@ -418,9 +416,9 @@ Schemas, golden oracles, and the **Vitest conformance oracle** live in the **[In
 
 ## Project development
 
-Layout: **Gradle** (`settings.gradle.kts`, `build.gradle.kts`, `gradle/libs.versions.toml`). The project targets **Java 21** (Gradle Java toolchain). CI runs **`./gradlew check`** on **Temurin 21**. Release history: [`CHANGELOG.md`](CHANGELOG.md).
+Layout: **Gradle** (`settings.gradle.kts`, `build.gradle.kts`, `gradle/libs.versions.toml`). The project targets **Java 21** (Gradle Java toolchain). CI runs **`./gradlew check`** on **Temurin 21**. Release history: **`CHANGELOG.md`**.
 
-Contributing (formatting, tests, coverage, cross-SDK parity, **shared `intentproof-spec` terminology**): see [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Contributing (formatting, tests, coverage, cross-SDK parity, **shared `intentproof-spec` terminology**): see **`CONTRIBUTING.md`**.
 
 Build locally:
 
@@ -429,12 +427,12 @@ Build locally:
 ./gradlew spotlessApply check   # apply Google Java Format, then same as above
 ```
 
-The build uses the [Foojay toolchain resolver](https://docs.gradle.org/current/userguide/toolchains.html#sub:download-repositories) so Gradle can provision a matching JDK when your machine only has a JRE or a newer JDK without `javac` on `PATH`.
+The build uses Gradle’s **Foojay toolchain resolver** so Gradle can provision a matching JDK when your machine only has a JRE or a newer JDK without **`javac`** on **`PATH`**.
 
-Publishing to Maven Central uses the Gradle **`maven-publish`** plugin plus Sonatype Central staging (**`io.github.gradle-nexus.publish-plugin`**) for **`io.github.intentproof:intentproof-sdk`**. Pushing a semver tag **`v*.*.*`** runs [`.github/workflows/release.yml`](.github/workflows/release.yml): full **`check`**, signed publish to Central, and a **GitHub Release** with JARs. Tag format and what the release workflow does are in [`RELEASING.md`](RELEASING.md).
+Publishing uses the Gradle **`maven-publish`** plugin plus Sonatype Central staging (**`io.github.gradle-nexus.publish-plugin`**) for **`io.github.intentproof:intentproof-sdk`**. Tag-driven releases run **`./gradlew check`**, publish signed artifacts, and attach build outputs per **`RELEASING.md`**.
 
 ---
 
 ## License
 
-Apache-2.0 (see `LICENSE` at the repository root and in published artifacts on **Maven Central** when released).
+Apache-2.0 (see **`LICENSE`** at the repository root).
