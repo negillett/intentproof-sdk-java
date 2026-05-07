@@ -2,7 +2,6 @@
 
 [![CI](https://github.com/IntentProof/intentproof-sdk-java/actions/workflows/ci.yml/badge.svg)](https://github.com/IntentProof/intentproof-sdk-java/actions/workflows/ci.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.intentproof/intentproof-sdk)](https://central.sonatype.com/search?q=g:io.github.intentproof+intentproof-sdk)
-[![GitHub release](https://img.shields.io/github/v/release/IntentProof/intentproof-sdk-java)](https://github.com/IntentProof/intentproof-sdk-java/releases)
 
 **IntentProof** is **auditable execution records** for actions that must be defensible—**intent** tied to what actually ran.
 
