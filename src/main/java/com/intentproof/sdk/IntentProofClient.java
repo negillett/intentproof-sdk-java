@@ -549,7 +549,9 @@ public final class IntentProofClient {
   }
 
   private static void defaultOnExporterError(Throwable error, ExecutionEvent event) {
-    System.err.println("[intentproof] exporter error " + error);
+    String message = error == null ? "unknown" : String.valueOf(error.getMessage());
+    String eventId = event == null ? "<unknown>" : String.valueOf(event.getId());
+    System.err.println("[intentproof] exporter error: " + message + " (eventId=" + eventId + ")");
   }
 
   private static Inputs inputsFromCaptured(Object inputs) {
