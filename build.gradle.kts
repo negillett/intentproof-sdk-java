@@ -301,6 +301,7 @@ tasks.named("spotlessJava").configure { dependsOn(tasks.named("generateJsonSchem
 
 // Gradle 9 implicit dependency checks: anything reading src/main/java must run after codegen.
 tasks.named("javadoc").configure { dependsOn(tasks.named("generateJsonSchema2Pojo")) }
+tasks.named("sourcesJar").configure { dependsOn(tasks.named("generateJsonSchema2Pojo")) }
 tasks.named("jacocoTestReport").configure { dependsOn(tasks.named("generateJsonSchema2Pojo")) }
 tasks.named("jacocoTestCoverageVerification").configure {
   dependsOn(tasks.named("generateJsonSchema2Pojo"))
