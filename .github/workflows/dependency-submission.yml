@@ -4,6 +4,11 @@ name: Dependency submission
 on:
   push:
     branches: [main, master]
+    # Match CI: conformance-only pushes do not change Gradle deps; skip so merge checks are not
+    # a misleading subset (full CI is also skipped for those paths via ci.yml paths-ignore).
+    paths-ignore:
+      - "conformance-certificate.json"
+      - "conformance-report.json"
 
 permissions:
   contents: write
