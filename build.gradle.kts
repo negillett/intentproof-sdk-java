@@ -95,6 +95,9 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.withType<Javadoc>().configureEach {
   options.encoding = "UTF-8"
+  // Generated schema POJOs are machine-produced and create high-volume doclint noise.
+  // Keep Javadoc signal focused on hand-maintained SDK APIs.
+  exclude("com/intentproof/sdk/generated/**")
   (options as org.gradle.external.javadoc.StandardJavadocDocletOptions).links(
       "https://docs.oracle.com/en/java/javase/21/docs/api/",
       "https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/${libs.versions.jackson.get()}/",
