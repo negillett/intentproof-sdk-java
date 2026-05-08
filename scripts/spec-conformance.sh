@@ -21,4 +21,9 @@ fi
 
 bash "${sdk_root}/scripts/check-sdk-spec-pin.sh" "$spec_root"
 
+export INTENTPROOF_SDK_ID="${INTENTPROOF_SDK_ID:-java}"
+export INTENTPROOF_SDK_NAME="${INTENTPROOF_SDK_NAME:-intentproof-sdk-java}"
+export INTENTPROOF_SDK_LANGUAGE="${INTENTPROOF_SDK_LANGUAGE:-java}"
+export INTENTPROOF_SDK_VERSION="${INTENTPROOF_SDK_VERSION:-$(grep -E '^version=' "${sdk_root}/gradle.properties" | head -1 | cut -d= -f2)}"
+
 exec bash "${spec_root}/scripts/run-conformance.sh" "$spec_root"
