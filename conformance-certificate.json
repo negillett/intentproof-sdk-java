@@ -1,7 +1,7 @@
 {
   "certificateVersion": "cert-v0.1.0",
   "issuer": "intentproof-ci",
-  "issuedAt": "2026-05-08T04:17:26.996Z",
+  "issuedAt": "2026-05-08T04:18:05.776Z",
   "subject": {
     "name": "intentproof-sdk-java",
     "language": "java",
@@ -12,7 +12,7 @@
     "specFingerprint": "efaf4db5b5545d9f037d4ce7d2208a7aed7062e9ac417b3fa79ec2adc8bef165",
     "specCommit": "40d3d0b96ded3c86030f3606a0cd0e477f88895c"
   },
-  "conformanceReportDigest": "f0c240c96118bb270b041c88d3112fd8f7c7f7df97639f04f55affab533d6d58",
+  "conformanceReportDigest": "6549fbd27b78a01faae3c8c66c5a0493c844a37d4ac532464c1862223045a957",
   "claims": {
     "oracle": "intentproof-spec/run-conformance",
     "allPhasesPass": true
