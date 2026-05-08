@@ -6,11 +6,18 @@ All notable changes to this repository are documented here. **Maven Central** pu
 
 ## Unreleased
 
-- **CI artifacts:** upload conformance certificate artifacts
-  (`conformance-certificate-java`) alongside conformance reports so
-  attestation outputs are directly visible from workflow runs.
-- **README visibility:** add CI/package/release badges and document where to
-  find conformance report/certificate artifacts in CI.
+- None yet.
+
+## 0.1.3 — 2026-05-08
+
+- **Conformance CI hardening:** keep canonical spec checks green when workflow
+  push-back is blocked by branch protection, while preserving artifact uploads
+  for reports and certificates.
+- **Spec pin adoption + docs:** pin to `spec-v2.0.1` and refresh README
+  documentation for conformance artifacts and spec-pinned workflows.
+- **Javadoc reliability:** exclude generated schema classes from Javadoc scope
+  and remove a flaky third-party docs link to prevent transient external
+  outages from failing CI.
 
 ## 0.1.2 — 2026-05-06
 
