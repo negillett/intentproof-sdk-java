@@ -10,11 +10,17 @@ All notable changes to this repository are documented here. **Maven Central** pu
 
 ## 0.1.3 — 2026-05-08
 
-- **Conformance CI hardening:** keep canonical spec checks green when workflow
-  push-back is blocked by branch protection, while preserving artifact uploads
-  for reports and certificates.
-- **Spec pin adoption + docs:** pin to `spec-v2.0.1` and refresh README
-  documentation for conformance artifacts and spec-pinned workflows.
+- **Conformance pipeline hardening:** pin to `spec-v2.0.1`, keep canonical
+  checks green when workflow push-back is blocked by branch protection, and
+  continue uploading report/certificate artifacts for each run.
+- **Cert-bot loop prevention:** skip conformance publish follow-up on cert-bot
+  actor runs and ignore conformance-only root JSON updates on push to
+  `main`/`master` to prevent repeated release-branch churn.
+- **Dependency-check flow alignment:** match dependency submission behavior to CI
+  path filters for conformance-only updates, and document GitHub automatic
+  dependency submission behavior in CONTRIBUTING for maintainers.
+- **CI/docs polish:** tighten workflow token permissions, simplify publish
+  gating conditions, and refresh README conformance guidance.
 - **Javadoc reliability:** exclude generated schema classes from Javadoc scope
   and remove a flaky third-party docs link to prevent transient external
   outages from failing CI.
