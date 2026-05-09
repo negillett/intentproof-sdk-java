@@ -160,7 +160,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
 
       - name: Spec pin guard (matches intentproof-spec checkout)
-        run: bash scripts/check-sdk-spec-pin.sh "${{ github.workspace }}/intentproof-spec"
+        run: bash scripts/check-consumer-spec-pin.sh "${{ github.workspace }}/intentproof-spec"
 
       - name: Generated POJO drift check
         env:
