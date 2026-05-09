@@ -6,7 +6,7 @@ All notable changes to this repository are documented here. **Maven Central** pu
 
 ## Unreleased
 
-- None yet.
+- **CI / conformance split:** add **`spec-conformance.yml`** (PR + manual oracle) and **`conformance-attestation.yml`** (trusted **`main`** signing, validation, cert-bot publish-back), matching Node/Python/API; trim oracle + publish from **`ci.yml`**.
 
 ## 0.1.3 — 2026-05-08
 
