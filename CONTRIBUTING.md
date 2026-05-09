@@ -34,7 +34,7 @@ If cross-language golden tests reveal a deliberate Java-only difference, documen
 
 GitHub may enable **Automatic Dependency Submission** for Gradle (`dynamic/dependency-graph/auto-submission`; the Actions UI may label it **Automatic Dependency Submission**). That **dynamic** workflow runs on **every** push to `main`, including commits that **only** refresh repo-root **`conformance-certificate.json`** and **`conformance-report.json`**.
 
-**`CI`** and **`.github/workflows/dependency-submission.yml`** skip those pushes via the same **`paths-ignore`** list, so on cert-bot artifact commits you may see **only** the automatic **`submit-gradle`** job succeed. That does **not** mean full SDK CI failed—it did not run by design.
+**`CI`**, **`.github/workflows/conformance-attestation.yml`** (push to **`main`**), and **`.github/workflows/dependency-submission.yml`** skip those pushes via the same **`paths-ignore`** list, so on cert-bot artifact commits you may see **only** the automatic **`submit-gradle`** job succeed. That does **not** mean full SDK CI failed—it did not run by design.
 
 To avoid that extra check (and possible duplicate submission alongside `.github/workflows/dependency-submission.yml`), turn off automatic Gradle dependency submission in the repository or organization **code security / dependency graph** settings and keep the explicit workflow only. See GitHub’s guide to [configuring dependency submission](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/configuring-the-dependency-submission-api).
 

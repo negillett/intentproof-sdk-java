@@ -397,8 +397,9 @@ Custom **`body`** serializers: if **`body(event)`** throws, **`HttpExporter`** n
 
 - **Version pin:** **`intentproofSpecVersion`** and **`intentproofSpecCommit`** in **`gradle.properties`** match **`spec.json`** and the spec **`HEAD`** checkout; **`scripts/check-consumer-spec-pin.sh`** delegates to **`intentproof-spec`** **`scripts/check-consumer-spec-pins.sh`** before conformance.
 
-- **CI:** every push/PR checks out **`intentproof-spec`** at the pinned commit and runs **`scripts/spec-conformance.sh`** (canonical oracle + replay; see `.github/workflows/ci.yml`).
-- **Repo-root certificates:** each run uploads **`conformance-report.json`** and **`conformance-certificate.json`** as workflow artifacts; after a green default-branch push, the conformance GitHub App commits the same files at the repo root when they differ from **`main`**.
+- **CI:** `.github/workflows/ci.yml` runs hardening, **`./gradlew check`**, and the **Trivy** JAR scan against a pinned **`intentproof-spec`** checkout.
+- **Spec conformance (PR):** `.github/workflows/spec-conformance.yml` runs the same Gradle gates plus **`scripts/spec-conformance.sh`** (canonical oracle + replay) and uploads a **`conformance-report.json`** artifact (committed spec public key path; no signing secrets on PRs).
+- **Trusted attestation (`main`):** `.github/workflows/conformance-attestation.yml` follows the **`intentproof-api`** pattern: signed oracle output, **`npm run validate:conformance-certificate`** in the spec checkout, combined **`conformance-artifacts`** upload, and cert-bot publish of root **`conformance-certificate.json`** / **`conformance-report.json`** when they change.
 
 - **Local:** clone **`intentproof-spec`** **next to** this repository (`../intentproof-spec`), then:
 
@@ -410,7 +411,7 @@ Custom **`body`** serializers: if **`body(event)`** throws, **`HttpExporter`** n
 
 - **Generated POJOs:** drift check with **`bash scripts/verify-generated-pojos.sh`** (after **`INTENTPROOF_SPEC_ROOT`** is set).
 
-- **No handwritten wire models:** **`scripts/check-no-handwritten-model-types.sh`** delegates to **`intentproof-spec`** (also covered by **`npm run ci`** / Gradle **`check`** flows).
+- **No handwritten wire models:** **`scripts/check-no-handwritten-model-types.sh`** delegates to **`intentproof-spec`** (also covered by Gradle **`check`** / hardening flows).
 
 ---
 
